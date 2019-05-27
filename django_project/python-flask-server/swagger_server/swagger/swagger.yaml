@@ -1,0 +1,253 @@
+---
+swagger: "2.0"
+info:
+  description: "A Simple django API for an organisation handling team projects"
+  version: "v1"
+  title: "DjangoProject"
+  contact: {}
+host: "rohit-malik-cn-django-8000.public.cy.devfactory.com"
+basePath: "/myapp1"
+tags: []
+schemes:
+- "http"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /user/:
+    post:
+      summary: "Create a new user"
+      description: "Create a new user"
+      operationId: "createuser_post"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Enter the name of the user"
+        required: true
+        schema:
+          $ref: "#/definitions/CreateuserRequest"
+      responses:
+        200:
+          description: "Success response"
+          headers: {}
+        412:
+          description: "The pre condition given in the request evaluated to false\
+            \ by the server."
+          headers: {}
+        450:
+          description: "Data not found in the database with the provided values."
+          headers: {}
+      deprecated: false
+      x-swagger-router-controller: "swagger_server.controllers.default_controller"
+  /project/:
+    post:
+      summary: "Create a new project"
+      description: "Create a new project"
+      operationId: "createproject_post"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Enter the name of the project"
+        required: true
+        schema:
+          $ref: "#/definitions/CreateprojectRequest"
+      responses:
+        200:
+          description: "Success response"
+          headers: {}
+        412:
+          description: "The pre condition given in the request evaluated to false\
+            \ by the server."
+          headers: {}
+        450:
+          description: "Data not found in the database with the provided values."
+          headers: {}
+      deprecated: false
+      x-swagger-router-controller: "swagger_server.controllers.default_controller"
+  /project/user/:
+    post:
+      summary: "Assign an existing project to users"
+      description: "Assign an existing project to users"
+      operationId: "assignproject_post"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Enter the project_id and a list of user_ids"
+        required: true
+        schema:
+          $ref: "#/definitions/AssignprojectRequest"
+      responses:
+        200:
+          description: "Success response"
+          headers: {}
+        412:
+          description: "The pre condition given in the request evaluated to false\
+            \ by the server."
+          headers: {}
+        450:
+          description: "Data not found in the database with the provided values."
+          headers: {}
+      deprecated: false
+      x-swagger-router-controller: "swagger_server.controllers.default_controller"
+  /project/mentor/:
+    post:
+      summary: "Assing a mentor to an existing project"
+      description: "Assing a mentor to an existing project"
+      operationId: "project_assignmentor_post"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Enter the project_id and a mentor_id"
+        required: true
+        schema:
+          $ref: "#/definitions/ProjectAssignmentorRequest"
+      responses:
+        200:
+          description: "Success response"
+          headers: {}
+        412:
+          description: "The pre condition given in the request evaluated to false\
+            \ by the server."
+          headers: {}
+        450:
+          description: "Data not found in the database with the provided values."
+          headers: {}
+      deprecated: false
+      x-swagger-router-controller: "swagger_server.controllers.default_controller"
+  /mentor/{mentor_id}/mentees/:
+    get:
+      summary: "Get the mentees of a given mentor"
+      description: "Get the mentees of a given mentor"
+      operationId: "project_mentor_by_mentor_id_get"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mentor_id"
+        in: "path"
+        description: "User id of the mentor"
+        required: true
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "Success response"
+          headers: {}
+        412:
+          description: "The pre condition given in the request evaluated to false\
+            \ by the server."
+          headers: {}
+        450:
+          description: "Data not found in the database with the provided values."
+          headers: {}
+      deprecated: false
+      x-swagger-router-controller: "swagger_server.controllers.default_controller"
+  /mentor/{mentor_id}/projects/:
+    get:
+      summary: "Get projects user is mentoring"
+      description: "Get projects user is mentoring"
+      operationId: "user_projects_by_user_id_get"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mentor_id"
+        in: "path"
+        description: "User id of the user"
+        required: true
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "Success response"
+          headers: {}
+        412:
+          description: "The pre condition given in the request evaluated to false\
+            \ by the server."
+          headers: {}
+        450:
+          description: "Data not found in the database with the provided values."
+          headers: {}
+      deprecated: false
+      x-swagger-router-controller: "swagger_server.controllers.default_controller"
+  /project/{project_id}/:
+    get:
+      summary: "Get the users and mentors of a project"
+      description: "Get the users and mentors of a project"
+      operationId: "project_by_project_id_get"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "Project id of the project"
+        required: true
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "Success response"
+          headers: {}
+        412:
+          description: "The pre condition given in the request evaluated to false\
+            \ by the server."
+          headers: {}
+        450:
+          description: "Data not found in the database with the provided values."
+          headers: {}
+      deprecated: false
+      x-swagger-router-controller: "swagger_server.controllers.default_controller"
+definitions:
+  CreateuserRequest:
+    type: "object"
+    properties:
+      user_name:
+        type: "string"
+    title: "CreateuserRequest"
+    example:
+      user_name: "user_name"
+  CreateprojectRequest:
+    type: "object"
+    properties:
+      project_name:
+        type: "string"
+    title: "CreateprojectRequest"
+    example:
+      project_name: "project_name"
+  AssignprojectRequest:
+    type: "object"
+    properties:
+      project_id:
+        type: "integer"
+        format: "int32"
+      user_list:
+        type: "array"
+        items:
+          type: "integer"
+          format: "int32"
+    title: "AssignprojectRequest"
+    example:
+      project_id: 0
+      user_list:
+      - 6
+      - 6
+  ProjectAssignmentorRequest:
+    type: "object"
+    properties:
+      mentor_id:
+        type: "integer"
+        format: "int32"
+      project_id:
+        type: "integer"
+        format: "int32"
+    title: "ProjectAssignmentorRequest"
+    example:
+      mentor_id: 0
+      project_id: 6

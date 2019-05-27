@@ -1,0 +1,132 @@
+openapi: 3.0.0
+info:
+  description: A Simple django API for an organisation with 
+  title: DjangoProject
+  version: v1
+servers:
+  - url:  http://127.0.0.1:8000/myapp1
+paths:
+  /createuser/:
+    post:
+      summary: Create a new user
+      responses:
+        '200':
+          description: Success response
+      requestBody:
+        description: Enter the name of the user
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_name: 
+                  type: string
+  /createproject/:
+    post:
+      summary: Create a new project
+      responses:
+        '200':
+          description: Success response
+      requestBody:
+        description: Enter the name of the project 
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                project_name: 
+                  type: string
+  /assignproject/:
+    post:
+      summary: Assign an existing project to users
+      responses:
+        '200':
+          description: Success response
+      requestBody:
+        description: Enter the project_id and a list of user_ids 
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                project_id: 
+                  type: integer
+                user_list: 
+                  type: array
+                  items:
+                    type: integer
+  /project/assignmentor/:
+    post:
+      summary: Assing a mentor to an existing project
+      responses:
+        '200':
+          description: Success response
+      requestBody:
+        description: Enter the project_id and a mentor_id
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mentor_id: 
+                  type: integer
+                project_id:
+                  type: integer
+  /project/mentor/{mentor_id}/:
+    get:
+      summary: Get the mentees of a given mentor
+      responses:
+        '200':
+          description: Success response
+          content:
+            application/json:
+              schema:
+                title: Mentees
+                type: object
+      parameters:
+        - in: path
+          name: mentor_id
+          schema:
+            type: integer
+          required: true
+          description: User id of the mentor
+  /project/{project_id}/:
+    get:
+      summary: Get the users and mentors of a project
+      responses:
+        '200':
+          description: Success response
+          content:
+            application/json:
+              schema:
+                title: Mentors and Users
+                type: object
+      parameters:
+        - in: path
+          name: project_id
+          schema:
+            type: integer
+          required: true
+          description: Project id of the project
+  /user/{user_id}/projects/:
+    get:
+      summary: Get projects user is mentoring
+      responses:
+        '200':
+          description: Success response
+          content:
+            application/json:
+              schema:
+                title: Projects
+                type: object
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: integer
+          required: true
+          description: User id of the user
