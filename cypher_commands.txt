@@ -1,0 +1,126 @@
+/*
+Neo4j CQL queries Assignment
+*/
+
+----------------------------------------Milestone 1--------------------------------------------------------
+
+
+1) Find nodes for classes and interfaces:
+
+MATCH (node:TypeDeclaration) where node.entity_type="class" OR node.entity_type="interface" return node 
+
+2) Find all classes of a package:
+
+MATCH (node:TypeDeclaration) where node.entity_type="class" AND node.longname=~'com\\.iluwatar\\.visitor\\..*' return node
+
+3) Find methods of a class both inherited and declared ones:
+
+MATCH (node:TypeDeclaration)
+where node.entity_type="class" AND node.simplename="Sergeant"
+with node Match(node)-[: member]->(n:MethodDeclaration) return n
+
+
+4) Find transitive closure of types (find ALL distinct ancestors of a specific type):
+
+MATCH (node:MethodDeclaration)<-[]-(n) with (n) return distinct labels(n),count(*) 
+
+
+
+// 2 IF statements left
+
+
+
+7) Find package of a given class:
+
+MATCH (node:TypeDeclaration)
+where node.entity_type="class" AND node.simplename="Sergeant"
+return replace(node.longname,"." + node.simplename,"")
+
+
+/*
+cyclomatic complexity = e-n+2*p
+e- number of edges
+n- number of nodes
+p- number of connected components
+*/
+
+8) Find total cyclomatic complexity of a class as sum of cyclomatic complexity of each method that belongs to it, the methods include both inherited and derived:
+
+MATCH (node:TypeDeclaration)
+where node.entity_type="class" AND node.simplename="Sergeant"
+with node Match(node)-[: member]->(n:MethodDeclaration) return Sum(toInteger(n.Cyclomatic)) AS Cyclomatic_Complexity
+
+9) Find all methods with 10 or more statement:
+
+MATCH (node:MethodDeclaration) where toInteger(node.CountStmt)>=10 return node
+
+10) Find all methods with 4 or more parameters:
+
+MATCH (node:MethodDeclaration) where toInteger(node.CountInput)>=4 return node
+
+11) Find all methods with 50 or more lines of code:
+
+MATCH (node:MethodDeclaration) where toInteger(node.CountLineCode)>=50 return node
+
+
+/*
+Tight Class Cohesion(TCC) = NDC/NP
+NDC- number of direct connections
+NP- total number of possible connections = nC2 = n(n-1)/2
+n- number of methods
+*/
+
+
+12) Calculate Tight Class Cohesion metric of a class:
+
+MATCH (node:TypeDeclaration)
+where node.entity_type="class" AND node.simplename="Validator"
+with node Match(node)-[: member]->(n:MethodDeclaration)
+with collect(n) as all_methods, count(n) as num_methods
+unwind all_methods as method1
+unwind all_methods as method2
+with *
+MATCH (method1)-[c]->(method2)
+with count(c) as num_connections, num_methods
+return (num_connections*1.0)/((num_methods)*(num_methods-1)) as Tight_Class_Cohesion
+
+
+13) Find shortest path between type_declaration and CFG_EXIT_NODE:
+
+MATCH (typedecnode:TypeDeclaration), (cfgexitnode:CFG_EXIT_NODE)
+return shortestpath((typedecnode)-[*]->(cfgexitnode)) limit 5
+
+
+----------------------------------Milestone 2-----------------------------------------------------------------
+
+
+1) Find all Singleton classes:
+
+MATCH (constructor:MethodDeclaration)-[:CALLBY]->(func:MethodDeclaration)
+with collect(func) as methods, constructor
+where constructor.isConstructor="True" and constructor.modifiers contains "private"
+and ALL(method in methods where method.modifiers contains "static")
+with collect(constructor) as list_c
+match (cl:TypeDeclaration)-[:member]->(me:MethodDeclaration) where cl.entity_type="class" and me in list_c
+return cl
+
+
+2) Find all occurrences of Builder patterns:
+
+MATCH (n:TypeDeclaration)-[:member]-(con:MethodDeclaration) 
+where n.entity_type="class" and con.isConstructor="True" and con.modifiers contains "private"
+with  n, con
+match (con)-[:parameter]->(b:SingleVariableDeclaration)-[:type]->(bb:SimpleType)
+with n, bb
+match (n)-[:member]->(builder) where builder.simplename=bb.name
+return n, builder
+
+
+3) Find all Facade classes - Bonus:
+
+MATCH (n:TypeDeclaration)-[:member]-(con:MethodDeclaration) 
+where n.entity_type="class" and con.isConstructor="True"
+with con, n
+match (con)-[c:USES]->(m:SimpleName)
+with count(c) as cc, n
+return n, cc
