@@ -1,0 +1,28 @@
+/*
+Neo4j CQL Queries
+*/
+
+
+1) Find the set of siblings of a node:
+
+MATCH (n)-[:IS_CHILD_OF]->(m)<-[:IS_CHILD_OF]-(sib)
+where not sib=n and id(n)=3
+return sib, n
+
+2) Find first common ancestor of two nodes:
+
+match (node1)-[:IS_CHILD_OF*]->(node_ancestor)<-[:IS_CHILD_OF*]-(node2)
+where node1.name = "author" and node2.name = "title"
+with *
+match path = (node1)-[:IS_CHILD_OF*]->(node_ancestor) return node_ancestor order by length(path) limit 1
+
+
+3) Find shortest path between two nodes:
+
+match (node1),(node2) where id(node1)=23 and id(node2)=1
+return shortestpath((node1)-[*]->(node2))
+
+4) Find all nodes filtered by an attribute or tag:
+
+MATCH (n)-[:ATTRIBUTE]->(m) where n.name="book" and m.attribute_value="bk102"
+return n
